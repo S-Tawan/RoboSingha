@@ -91,6 +91,7 @@ client.on('message', async msg => {
             }
             await user.send(msg.author.username + 'ให้มาเรียก 55555')
         }
+        
         if (msg.channel.id === '899519561320263720') {
             await msg.channel.send("สู้ ๆ นะนายท่านน");
         }
