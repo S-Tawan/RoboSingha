@@ -20,7 +20,7 @@ client.on('ready', () => {
 
 client.on('message', async msg => {
     if (!msg.author.bot) {
-        console.log(msg)
+        // console.log(msg)
         let userId = msg.author.id;
         let user = foodsUsers.users.find(user => user.id === userId);
         if (msg.content.startsWith('p! play ')) {
@@ -81,22 +81,25 @@ client.on('message', async msg => {
         }
         if (msg.content.startsWith('เรียก ')) {
             let strings = msg.content.split(' ');
-            let n = strings[strings.length-1];
+            let n = strings[strings.length - 1];
             await msg.reply("จัดให้");
-            let  userMention = null;
-            try {
-                for (let userMentionId of msg.mentions.users) {
-                     userMention = client.users.find(value => value.id === userMentionId[0]);
+            let userMention = null;
+
+            for (let userMentionId of msg.mentions.users) {
+                userMention = client.users.find(value => value.id === userMentionId[0]);
+                try {
                     for (let i = 0; i < n; i++) {
                         await userMention.send('สวัสดีจ่ะ มาม้ะ ๆ ' + (i + 1));
-                        console.log(i)
+                        console.log(new Date().toLocaleString(), userMention.username, i + 1)
                     }
-                    await userMention.send(msg.author.username + 'ให้มาเรียก 55555')
+                    await userMention.send(msg.author.username + ' ให้มาเรียก 55555')
+                } catch (e) {
+                    console.log(e)
+                    await msg.channel.send("แย่ ๆ ไม่น่ารักหรือเปล่า" + userMention.toString());
                 }
-            }catch (e){
-                console.log(e)
-               await msg.channel.send("แย่ ๆ ไม่น่ารักหรือเปล่า" + userMention.toString());
             }
+
+            await msg.reply("เรียบร้อย");
 
         }
 
