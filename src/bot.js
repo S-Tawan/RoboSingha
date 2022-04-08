@@ -23,7 +23,7 @@ client.on('message', async msg => {
         console.log(msg)
         let userId = msg.author.id;
         let user = foodsUsers.users.find(user => user.id === userId);
-        if (msg.content.startsWith('-p ')) {
+        if (msg.content.startsWith('p! play ')) {
             index = songs.indexOf(msg.content);
             console.log(index);
 
@@ -81,19 +81,31 @@ client.on('message', async msg => {
         }
         if (msg.content.startsWith('เรียก ')) {
             let strings = msg.content.split(' ');
-            let userId = strings[1].substring(3,21);
-            let n = strings[3];
+            let n = strings[strings.length-1];
             await msg.reply("จัดให้");
-            let user = client.users.find(value => value.id === userId);
-            for (let i = 0; i < n; i++) {
-                await user.send('สวัสดีจ่ะ มาม้ะ ๆ '+(i+1));
-                console.log(i)
+            let  userMention = null;
+            try {
+                for (let userMentionId of msg.mentions.users) {
+                     userMention = client.users.find(value => value.id === userMentionId[0]);
+                    for (let i = 0; i < n; i++) {
+                        await userMention.send('สวัสดีจ่ะ มาม้ะ ๆ ' + (i + 1));
+                        console.log(i)
+                    }
+                    await userMention.send(msg.author.username + 'ให้มาเรียก 55555')
+                }
+            }catch (e){
+                console.log(e)
+               await msg.channel.send("แย่ ๆ ไม่น่ารักหรือเปล่า" + userMention.toString());
             }
-            await user.send(msg.author.username + 'ให้มาเรียก 55555')
+
         }
-        
+
         if (msg.channel.id === '899519561320263720') {
             await msg.channel.send("สู้ ๆ นะนายท่านน");
+        }
+
+        if (msg.content.startsWith('cal ')) {
+            await msg.reply((eval(msg.content.split(' ')[1])))
         }
 
         switch (msg.content) {
@@ -160,7 +172,6 @@ client.on('message', async msg => {
                 break;
             case "แมว":
 
-
                 let config = {
                     method: 'get',
                     url: 'https://api.thecatapi.com/v1/images/search',
@@ -199,6 +210,34 @@ client.on('message', async msg => {
                     }).catch(function (error) {
                     console.log(error);
                 });
+                break;
+
+            case "สีเหลือง":
+                await msg.reply("เยลโล้")
+                break;
+            case "มะม่วง":
+                await msg.reply("แมงโก้")
+                break;
+            case "ปืน":
+                await msg.reply("ลูกโม้")
+                break;
+            case "มีด":
+                await msg.reply("อีโต้")
+                break;
+            case "รถยนต์":
+                await msg.reply("วีโก้")
+                break;
+            case "ชุดชั้นใน":
+                await msg.reply("วาโก้")
+                break;
+            case "แฟนจับได้":
+                await msg.reply("ฟันดัวยอีโต้")
+                break;
+            case "วันนี้ครับ":
+                await msg.reply("แล้วไงครับ")
+                break;
+            case "เมื่อวานครับ":
+                await msg.reply("ยังไงครับ")
                 break;
         }
     }
