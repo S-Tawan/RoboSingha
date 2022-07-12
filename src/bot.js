@@ -13,9 +13,9 @@ const pathfileFoodsUsers = "../db/foods_users.json";
 const faker = require('faker');
 const ffmpeg = require('ffmpeg');
 const axios = require('axios');
+const groupWords = require('./../db/group_words.json')
 let robo;
-let wordsGroup = [["1.1","1.2","1.3","1.4"],["2.1","2.2","2.3","2.4"],["3.1","3.2","3.3","3.4"],["4.1","4.2","4.3","4.4"]]
-
+let wordsGroup = groupWords;
 client.on('ready', () => {
     robo = client.channels.get("899897577774940160");
 
@@ -197,29 +197,44 @@ client.on('message', async msg => {
                 await msg.reply("คุณคือ " + msg.author.id)
                 break;
             case "test":
-                if (wordsGroup.length>0){
+                if (wordsGroup.length > 0) {
+                    let gameRoom = client.channels.get("994817351566495796")
+                    let members = gameRoom.members;
                     let number = Math.floor(Math.random() * wordsGroup.length);
                     let words = wordsGroup[number];
-                    wordsGroup.splice(number,1);
-                    let gameRoom = client.channels.get("639865423826911257")
-                    let members = gameRoom.members;
-                    let users = [];
-                    await members.forEach((value) => {
-                        let index = Math.floor(Math.random() * words.length);
-                        let word = words[index];
-                        words.splice(index,1);
-                        users.push(new UserWord(value,word));
-                    });
+                    if (members.size > 1 && members.size <= words.length) {
+                        wordsGroup.splice(number, 1);
+                        let users = [];
+                        await members.forEach((value) => {
+                            let index = Math.floor(Math.random() * words.length);
+                            let word = words[index];
+                            words.splice(index, 1);
+                            users.push(new UserWord(value, word));
+                        });
 
-                    await members.forEach((value) => {
-                        value.send("เกมคำต้องห้ามมมม");
-                        users.forEach(user =>{
-                            if (user.user !== value){
-                                value.send(user.user.user.username + " : " + user.word);
+                        await members.forEach((value) => {
+                            value.send("เกมคำต้องห้ามมมม");
+                            users.forEach(user => {
+                                if (user.user !== value) {
+                                    value.send(user.user.user.username + " : " + user.word);
+                                }
+                            });
+                        });
+                    } else {
+                            switch (members.size) {
+                                case 0 :
+                                    await msg.reply("ไม่มีคนอยู่ในห้อง : " + gameRoom );
+                                    break;
+                                case 1 :
+                                    await msg.reply("ไม่ต้องเหงานะ");
+                                    break;
+                                default :
+                                    await msg.reply("เล่นได้ไม่เกิน " + (words.length) + " คน");
+                                    break;
                             }
-                        })
-                    });
-                }else {
+                    }
+
+                } else {
                     await msg.reply("คำหมดแล้ว")
                 }
 
@@ -314,10 +329,12 @@ const storeData = (data, path) => {
     fs.writeFileSync(path, JSON.stringify(data))
 
 }
+
 class UserWord {
     constructor(user, word) {
         this.user = user;
         this.word = word;
     }
 }
+
 client.login(auth.token);
