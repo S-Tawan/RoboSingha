@@ -1,6 +1,6 @@
 const {
     Client,
-    MessageAttachment
+    MessageAttachment, GuildMember
 } = require('discord.js');
 const client = new Client();
 const auth = require('./auth.json');
@@ -13,14 +13,29 @@ const pathfileFoodsUsers = "../db/foods_users.json";
 const faker = require('faker');
 const ffmpeg = require('ffmpeg');
 const axios = require('axios');
+let robo;
+let wordsGroup = [["1.1","1.2","1.3","1.4"],["2.1","2.2","2.3","2.4"],["3.1","3.2","3.3","3.4"],["4.1","4.2","4.3","4.4"]]
 
 client.on('ready', () => {
+    robo = client.channels.get("899897577774940160");
+
+
+    // robo.send("สวัสดีวัยรุ่น")
+
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
 client.on('message', async msg => {
     if (!msg.author.bot) {
-        // console.log(msg)
+        if (msg.channel.type === "dm") {
+            if (msg.author.username == "Singha") {
+                robo.send(msg.content);
+            } else {
+                robo.send(`${msg.author.username} คุยกับเราว่า ${msg.content}`)
+            }
+        }
+
+        console.log(msg)
         let userId = msg.author.id;
         let user = foodsUsers.users.find(user => user.id === userId);
         if (msg.content.startsWith('p! play ')) {
@@ -89,7 +104,15 @@ client.on('message', async msg => {
                 userMention = client.users.find(value => value.id === userMentionId[0]);
                 try {
                     for (let i = 0; i < n; i++) {
-                        await userMention.send('สวัสดีจ่ะ มาม้ะ ๆ ' + (i + 1));
+                        if (userMention.username === "palm" && msg.author.username === "Singha") {
+                            await userMention.send('มาหาพี่เถอะนะ ไอ้น้องรัก' + (i + 1));
+                        }
+                        if (msg.author.username === "jelloAdventure") {
+                            await userMention.send('มาเด้อ ๆ แซ่บ ๆ' + (i + 1));
+                        } else {
+                            await userMention.send('สวัสดีจ่ะ มาม้ะ ๆ ' + (i + 1));
+                        }
+
                         console.log(new Date().toLocaleString(), userMention.username, i + 1)
                     }
                     await userMention.send(msg.author.username + ' ให้มาเรียก 55555')
@@ -173,6 +196,34 @@ client.on('message', async msg => {
             case "ฉันคือใคร":
                 await msg.reply("คุณคือ " + msg.author.id)
                 break;
+            case "test":
+                if (wordsGroup.length>0){
+                    let number = Math.floor(Math.random() * wordsGroup.length);
+                    let words = wordsGroup[number];
+                    wordsGroup.splice(number,1);
+                    let gameRoom = client.channels.get("639865423826911257")
+                    let members = gameRoom.members;
+                    let users = [];
+                    await members.forEach((value) => {
+                        let index = Math.floor(Math.random() * words.length);
+                        let word = words[index];
+                        words.splice(index,1);
+                        users.push(new UserWord(value,word));
+                    });
+
+                    await members.forEach((value) => {
+                        value.send("เกมคำต้องห้ามมมม");
+                        users.forEach(user =>{
+                            if (user.user !== value){
+                                value.send(user.user.user.username + " : " + user.word);
+                            }
+                        })
+                    });
+                }else {
+                    await msg.reply("คำหมดแล้ว")
+                }
+
+                break;
             case "แมว":
 
                 let config = {
@@ -242,6 +293,15 @@ client.on('message', async msg => {
             case "เมื่อวานครับ":
                 await msg.reply("ยังไงครับ")
                 break;
+            case "ครวย":
+                await msg.reply("พ่อง")
+                break;
+            case "ไอ้สาส":
+                await msg.reply("สาสแม่มึงอ่ะ")
+                break;
+            case "ไอ้เตี้ย":
+                await msg.reply("สูงกว่าแม่มึงและกัน")
+                break;
         }
     }
 
@@ -254,5 +314,10 @@ const storeData = (data, path) => {
     fs.writeFileSync(path, JSON.stringify(data))
 
 }
-
+class UserWord {
+    constructor(user, word) {
+        this.user = user;
+        this.word = word;
+    }
+}
 client.login(auth.token);
