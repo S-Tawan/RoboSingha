@@ -29,7 +29,7 @@ client.on('message', async msg => {
     if (!msg.author.bot) {
         if (msg.channel.type === "dm") {
             if (msg.author.username == "Singha") {
-                robo.send(msg.content);
+                // robo.send(msg.content);
             } else {
                 robo.send(`${msg.author.username} คุยกับเราว่า ${msg.content}`)
             }
@@ -134,6 +134,24 @@ client.on('message', async msg => {
             await msg.reply((eval(msg.content.split(' ')[1])))
         }
 
+        if (msg.content.startsWith('id ')) {
+            let ids = msg.content.split(' ')[1].split("");
+            let sum = 0;
+            let j = 0;
+            for (let i = ids.length; i > 1; i--) {
+                sum += ids[j++] * i;
+            }
+            let message = "";
+            let moder = ids.length - 2;
+            let number = moder - (sum % moder);
+            if (number > 9)
+                number = number % 10
+
+            message = number == ids[ids.length - 1] ? "ถูก" : "ผิด";
+            await msg.reply(message)
+
+        }
+
         switch (msg.content) {
             case "show":
                 // code block
@@ -221,17 +239,17 @@ client.on('message', async msg => {
                             });
                         });
                     } else {
-                            switch (members.size) {
-                                case 0 :
-                                    await msg.reply("ไม่มีคนอยู่ในห้อง : " + gameRoom );
-                                    break;
-                                case 1 :
-                                    await msg.reply("ไม่ต้องเหงานะ");
-                                    break;
-                                default :
-                                    await msg.reply("เล่นได้ไม่เกิน " + (words.length) + " คน");
-                                    break;
-                            }
+                        switch (members.size) {
+                            case 0 :
+                                await msg.reply("ไม่มีคนอยู่ในห้อง : " + gameRoom);
+                                break;
+                            case 1 :
+                                await msg.reply("ไม่ต้องเหงานะ");
+                                break;
+                            default :
+                                await msg.reply("เล่นได้ไม่เกิน " + (words.length) + " คน");
+                                break;
+                        }
                     }
 
                 } else {
@@ -287,6 +305,9 @@ client.on('message', async msg => {
             case "มะม่วง":
                 await msg.reply("แมงโก้")
                 break;
+            case "เตา":
+                await msg.reply("อั้งโล่")
+                break;
             case "ปืน":
                 await msg.reply("ลูกโม้")
                 break;
@@ -315,6 +336,9 @@ client.on('message', async msg => {
                 await msg.reply("สาสแม่มึงอ่ะ")
                 break;
             case "ไอ้เตี้ย":
+                await msg.reply("สูงกว่าแม่มึงและกัน")
+                break;
+                case "ไอ้เตี้ย":
                 await msg.reply("สูงกว่าแม่มึงและกัน")
                 break;
         }
